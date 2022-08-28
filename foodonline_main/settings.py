@@ -14,6 +14,7 @@ from ctypes import cast
 from pathlib import Path
 from decouple import config
 
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -67,6 +68,10 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
+                
+                'accounts.context_processors.get_vendor',
+                
+                
             ],
         },
     },
@@ -131,14 +136,14 @@ STATICFILES_DIRS = [
 ]
 
 #media static
+
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR /'media'
 
-#message tags
+
 from django.contrib.messages import constants as messages
 MESSAGE_TAGS = {
     messages.ERROR: 'danger',
-    
 }
 
 # Default primary key field type

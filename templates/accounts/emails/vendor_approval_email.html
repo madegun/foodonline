@@ -1,0 +1,14 @@
+{% autoescape off%}
+
+Hi, {{ user.first_name }}
+
+{% if is_approved %}
+Selamat, Restaurant yang anda daftarkan sudah di approved.
+Silahkan upload menu restaurant anda melalui dashboard anda.
+
+{% else %}
+Sorry, Restaurant yang anda daftarkan belum di setujui.
+Silahkan menghubungi admin kami untuk informasi lebih lanjut.
+{% endif %}
+
+{% endautoescape %}
