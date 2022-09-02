@@ -1,7 +1,9 @@
-from tkinter import Widget
-from typing_extensions import Self
+
 from django import forms
-from .models import User
+
+from .validators import validation_image
+from .models import User, UserProfile
+
 
 
 class UserForm(forms.ModelForm):
@@ -19,3 +21,29 @@ class UserForm(forms.ModelForm):
 
         if password != confirm_password:
             raise forms.ValidationError('confirm password tidak cocok!')
+
+
+
+
+class UserProfileForm(forms.ModelForm):
+    profile_picture = forms.FileField(
+        widget=forms.FileInput(attrs={'class': 'btn btn-info rounded'}),
+        validators=[validation_image])
+    cover_photo = forms.FileField(
+        widget=forms.FileInput(attrs={'class': 'btn btn-info rounded'}),
+        validators=[validation_image])
+
+    class Meta:
+        model = UserProfile
+        fields = [
+            'profile_picture', 'cover_photo', 'address_line_1',
+            'address_line_2', 'country', 'state', 'city', 'pin_code',
+            'latitude', 'longitude'
+        ]
+
+
+    def __init__(self, *args, **kwargs):
+      super(UserProfileForm, self).__init__(*args, **kwargs)
+      for field in self.fields:
+        if field == 'latitude' or field == 'longitude':
+          self.fields[field].widget.attrs['readonly'] = 'readonly'
