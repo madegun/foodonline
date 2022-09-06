@@ -43,6 +43,7 @@ INSTALLED_APPS = [
 
      'accounts',
      'vendor',
+     'menu',
 ]
 
 MIDDLEWARE = [
@@ -162,6 +163,4 @@ EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL=config('DEFAULT_FROM_EMAIL')
 
 #Google API key
-# GOOGLE_API_KEY='AIzaSyCf4HVh8I6lQhoKicKtYaRie4UI05FdAEk'
-
 GOOGLE_API_KEY = config('GOOGLE_API_KEY')

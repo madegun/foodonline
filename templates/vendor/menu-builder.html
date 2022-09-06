@@ -1,0 +1,53 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<!--load message toast -->
+{% include 'include/alerts.html' %}
+
+<!-- Main Section Start -->
+<div class="main-section">
+  {% include 'include/vCover.html' %}
+  <div class="page-section account-header buyer-logged-in">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <div class="user-account-nav user-account-sidebar">
+            {% include 'include/v_sidebar.html' %}
+          </div>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+          <div class="user-dashboard loader-holder">
+            <div class="user-holder">
+              <h5 class="text-uppercase">Build Your Food Menu</h5>
+              <!-- table list start -->
+              <hr/>
+
+              <h6>Food Category</h6>
+
+              <a href="#" class="btn btn-info float-right m-1"><i class="icon-plus m-1" aria-hidden=true></i>Add Food</a>
+              <a href="{% url 'addCat' %}" class="btn btn-success float-right m-1"><i class="icon-plus m-1" aria-hidden=true></i>Add Category</a>
+              <br/>
+              <table class="table table-hover table-borderless">
+                <tbody>
+                  {% for cat in categories %}
+                  <tr>
+
+                    <td class="text-left">{{ forloop.counter }}</td>
+                    <td class="text-left"><a href="{% url 'foodItemByCat' cat.id %}"><p class="mb-0 font-weight-bold">{{cat}}</p>
+                    <small class="text-muted">{{cat.description}}</small>
+                    </a></td>
+                    <td><a href="{% url 'edit_category' cat.id %}" style="color:unset"><i class="icon-pencil" area-hidden="true"></i></a> &nbsp; <a href="{% url 'delete_category' cat.id %}" onclick="return confirm('apakah yakin hapus category ini?')"> <i class="icon-trash text-danger" area-hidden="true"></i></a> </td>
+                  </tr>
+
+                  {% endfor %}
+                </tbody>
+              </table>
+              <!-- table list End -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main Section End -->
+
+{% endblock %}
