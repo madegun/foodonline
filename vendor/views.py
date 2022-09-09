@@ -3,7 +3,7 @@ from accounts.form import UserProfileForm
 from django.contrib import messages
 
 from accounts.models import UserProfile
-from menu.form import CategoryForm
+from menu.form import CategoryForm, FoodItemForm
 from menu.models import Category, FoodItem
 from vendor.models import Vendor
 from .form import VendorForm
@@ -78,6 +78,9 @@ def foodItemByCat(request, pk=None):
 
 
 #category CRUD
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+
 def addCat(request):
   if request.method == 'POST':
     form = CategoryForm(request.POST)
@@ -102,6 +105,8 @@ def addCat(request):
   return render(request, 'vendor/addCat.html', context)
 
 
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 
 def edit_category(request, pk=None):
   category = get_object_or_404(Category, pk=pk)
@@ -128,9 +133,72 @@ def edit_category(request, pk=None):
 
   return render(request, 'vendor/edit-category.html', context)
 
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
 
 def delete_category(request, pk=None):
   category = get_object_or_404(Category, pk=pk)
   category.delete()
   messages.success(request, 'category berhasil dihapus')
   return redirect('menu-builder')
+
+
+def add_food(request):
+  if request.method == 'POST':
+    form = FoodItemForm(request.POST, request.FILES)
+    if form.is_valid():
+      food_title = form.cleaned_data['food_title']
+      food = form.save(commit=False)
+      food.vendor = get_vendor(request)
+      food.slug = slugify(food_title)
+      form.save()
+      messages.success(request, 'add food berhasil ditambahkan.')
+      return redirect('foodItemByCat', food.category.id)
+    else:
+      print(form.errors)
+  else:
+    form = FoodItemForm()
+    #tampilkan category terhadap user only
+    #modif form sebelum ke context
+    form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+    context = {
+      'form': form,
+    }
+  return render(request, 'vendor/add_food.html', context)
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+
+def edit_food(request, pk=None):
+  food = get_object_or_404(FoodItem, pk=pk)
+  if request.method == 'POST':
+    form = FoodItemForm(request.POST, request.FILES, instance=food)
+    if form.is_valid():
+      foodtitle = form.cleaned_data['food_title']
+      food = form.save(commit=False)
+      food.vendor = get_vendor(request)
+      food.slug = slugify(foodtitle)
+      form.save()
+      messages.success(request, 'Food item berhasil di update.')
+      return redirect('foodItemByCat', food.category.id)
+    else:
+      print(form.errors)
+  else:
+    form = FoodItemForm(instance=food)
+    #tampilkan category terhadap user only
+    #modif form sebelum ke context
+    form.fields['category'].queryset = Category.objects.filter(vendor=get_vendor(request))
+    context = {
+      'form': form,
+      'food': food,
+    }
+  return render(request, 'vendor/edit_food.html', context)
+
+@login_required(login_url='login')
+@user_passes_test(check_role_vendor)
+
+def delete_food(request, pk=None):
+  food = get_object_or_404(FoodItem, pk=pk)
+  food.delete()
+  messages.success(request, 'Food item berhasil di hapus.')
+  return redirect('foodItemByCat', food.category.id)

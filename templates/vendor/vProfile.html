@@ -18,7 +18,11 @@
             <div class="user-holder">
               <h5 class="text-uppercase">Manage Your Restaurant</h5>
               <!-- My Restaurants Form Start -->
-              <form action="{% url 'vProfile' %}" method="POST" enctype="multipart/form-data">
+              <form
+                action="{% url 'vProfile' %}"
+                method="POST"
+                enctype="multipart/form-data"
+              >
                 {% csrf_token %}
                 <div class="form-fields-set">
                   <ul>
@@ -31,11 +35,18 @@
                                 <li class="gal-img">
                                   <div class="drag-list">
                                     <div class="item-thumb">
+                                      {% if profile.profile_picture %}
                                       <img
                                         class="thumbnail"
                                         src="{{profile.profile_picture.url}}"
                                         alt="logo"
                                       />
+                                      {% else %}
+                                      <img
+                                        src="{% static 'images/default-cover.PNG' %}"
+                                        alt=""
+                                      />
+                                      {% endif %}
                                     </div>
                                   </div>
                                 </li>
@@ -44,10 +55,12 @@
                             <div class="text-holder">
                               <label>Update Profile Photo</label>
                               <div class="upload-gallery">
-                               {{profile_form.profile_picture}}
+                                {{profile_form.profile_picture}}
                               </div>
                             </div>
-                            <label class="text-danger">{{profile_form.profile_picture.errors}}</label>
+                            <label class="text-danger"
+                              >{{profile_form.profile_picture.errors}}</label
+                            >
                           </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -57,11 +70,18 @@
                                 <li class="gal-img">
                                   <div class="drag-list">
                                     <div class="item-thumb">
+                                      {% if profile.cover_photo %}
                                       <img
                                         class="thumbnail"
                                         src="{{profile.cover_photo.url}}"
                                         alt="cover_image"
                                       />
+                                      {% else %}
+                                      <img
+                                      src="{% static 'images/default-profile.PNG' %}"
+                                      alt=""
+                                    />
+                                      {% endif %}
                                     </div>
                                   </div>
                                 </li>
@@ -70,10 +90,12 @@
                             <div class="text-holder">
                               <label>Update Cover Photo</label>
                               <div class="upload-gallery">
-                               {{profile_form.cover_photo}}
+                                {{profile_form.cover_photo}}
                               </div>
                             </div>
-                            <label class="text-danger">{{profile_form.profile_picture.errors}}</label>
+                            <label class="text-danger"
+                              >{{profile_form.profile_picture.errors}}</label
+                            >
                           </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -96,10 +118,12 @@
                             <div class="text-holder">
                               <label>Update License</label>
                               <div class="upload-gallery">
-                               {{vendor_form.vendor_license}}
+                                {{vendor_form.vendor_license}}
                               </div>
                             </div>
-                            <label class="text-danger">{{profile_form.profile_picture.errors}}</label>
+                            <label class="text-danger"
+                              >{{profile_form.profile_picture.errors}}</label
+                            >
                           </div>
                         </div>
                         <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
@@ -113,10 +137,11 @@
                           <div class="field-holder">
                             <label>Address</label>
                             {{profile_form.address}}
-                            <small class="text=muted float-right">power by Google</small>
+                            <small class="text=muted float-right"
+                              >power by Google</small
+                            >
                           </div>
                         </div>
-
 
                         <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
                           <div class="field-holder">
@@ -155,17 +180,13 @@
                             {{profile_form.longitude}}
                           </div>
                         </div>
-
                       </div>
                     </li>
                   </ul>
                   <div>
                     <div class="field-holder">
                       <div class="payment-holder input-button-loader">
-                        <input
-                          type="submit"
-                          value="Update Restaurant"
-                        />
+                        <input type="submit" value="Update Restaurant" />
                       </div>
                     </div>
                   </div>

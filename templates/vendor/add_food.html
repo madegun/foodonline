@@ -20,16 +20,23 @@
               <hr/>
               <button class="btn btn-secondary" onclick="history.back()"><i class="icon-angle-left"></i>&nbsp; Back</button>
               <br/><br/>
-              <h6>Edit Category</h6>
+              <h6>Add New Food Item</h6>
 
-              <form action="{% url 'edit_category' category.id %}" method="POST">
+              <form action="{% url 'add_food' %}" method="POST" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="form-fields-set">
+               <div class="form-fields-set">
                   <div class="row">
                     <div class="col-lg-12 col-md-12 ">
                       <div class="field-holder">
-                        <label>Category Name *</label>
-                        {{form.category_name}}
+                        <label>Food Title *</label>
+                        {{form.food_title}}
+                      </div>
+                    </div>
+
+                    <div class="col-lg-12 col-md-12 ">
+                      <div class="field-holder">
+                        <label>Category *</label>
+                        {{form.category}}
                       </div>
                     </div>
 
@@ -39,8 +46,29 @@
                         {{form.description}}
                       </div>
                     </div>
+
+                    <div class="col-lg-6 col-md-6 ">
+                      <div class="field-holder">
+                        <label>Price</label>
+                        {{form.price}}
+                      </div>
+                    </div>
+                    <div class="col-lg-6 col-md-6 ">
+                      <div class="field-holder">
+                        <label>Image</label>
+                        {{form.image}}
+                      </div>
+                    </div>
+
+                    <div class="col-lg-6 col-md-6 ">
+                      <div class="field-holder">
+                        <label>Available?</label>
+                        {{form.is_available}}
+                      </div>
+                    </div>
                   </div>
                 </div>
+
 
                     {% for field in form %}
                       {% if field.errors %}
@@ -50,8 +78,7 @@
                       {% endif %}
                     {% endfor %}
 
-                <button type="submit" class="btn btn-success" ><i class="icon-check" area-hidden="true"></i>&nbsp; Update</button>&nbsp;
-                <a href="{% url 'delete_category' category.id %}" class="btn btn-danger" onclick=" return confirm('yakin mau hapus category {{category.category_name}} ini?')" ><i class="icon-trash" area-hidden="true"></i>&nbsp; Delete</a>
+                <button type="submit" class="btn btn-success" ><i class="icon-check" area-hidden="true"></i>&nbsp; Create</button>
               </form>
             </div>
           </div>

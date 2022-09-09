@@ -35,17 +35,24 @@
                     <td class="text-left"><a href="#"><p class="mb-0 font-weight-bold">{{food}}</p>
                     <small class="text-muted">{{food.description}}</small>
                     </a></td>
-                    <td><i class="icon-pencil" area-hidden="true"></i> &nbsp; <i class="icon-trash text-danger" area-hidden="true"></i> </td>
+                    <td>
+                      {% if food.is_available %}
+                      <span class="badge bg-success text-white">Available</span>
+                      {% else %}
+                      <span class="badge bg-danger text-white">Not Available</span>
+                      {% endif %}
+                    </td>
+                    <td><a href="{% url 'edit_food' food.id %}" style="color:unset"><i class="icon-pencil" area-hidden="true"></i></a> &nbsp; <a href="{% url 'delete_food' food.id  %}" onclick="return confirm('apakah yakin hapus data {{food.food_title}} ini ?') " ><i class="icon-trash text-danger" area-hidden="true"></i> </a></td>
                   </tr>
 
                   {% endfor %}
                 </tbody>
               </table>
               {% else %}
-              <h6 class="text-center">No Food Items in this category</h6>
+              <h6 class="text-center">Belum ada menu dalam kategori ini</h6>
 
                 <div class="text-center">
-                  <a href="#" class="btn btn-info"><i class="icon-plus" area-hidden="true" ></i> &nbsp; Add Food</a>
+                  <a href="{% url 'add_food' %}" class="btn btn-info"><i class="icon-plus" area-hidden="true" ></i> &nbsp; Create menu baru</a>
                 </div>
               {% endif %}
               <!-- table list End -->
