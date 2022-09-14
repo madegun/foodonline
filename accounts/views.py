@@ -11,6 +11,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from vendor.models import Vendor
 
+from django.template.defaultfilters import slugify
+
 def check_role_vendor(user):
     if user.role == 1:
         return True
@@ -81,7 +83,7 @@ def registerUser(request):
 def registerVendor(request):
     if request.user.is_authenticated:
         messages.success(request, 'you are already registered')
-        return redirect('dashboard')
+        return redirect('myAccount')
     elif request.method == 'POST':
         form = UserForm(request.POST)
         v_form = VendorForm(request.POST, request.FILES)
@@ -102,8 +104,16 @@ def registerVendor(request):
             user.role = User.VENDOR
             user.save()
 
+            vendor = v_form.save(commit=False)
+            vendor.user = user
+            vendor_name = v_form.cleaned_data['vendor_name']
+            vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id)
+            user_profile = UserProfile.objects.get(user=user)
+            vendor.user_profile = user_profile
+            vendor.save()
+
             #send verification email
-            mail_subject = 'Verivication email'
+            mail_subject = 'Verification email'
             email_template = 'accounts/emails/account_verify_email.html'
             send_email_verify(request, user, mail_subject, email_template)
 
@@ -189,7 +199,7 @@ def myAccount(request):
 
 @login_required(login_url='login')
 @user_passes_test(check_role_vendor)
-def vendorDashboard(request):   
+def vendorDashboard(request):
     return render(request, 'accounts/vendorDashboard.html')
 
 
@@ -227,7 +237,7 @@ def reset_password_validate(request, uidb64, token):
 
     except (TypeError, ValueError, OverflowError, User.DoesNotExist):
         user = None
-        
+
 
     if user is not None and default_token_generator.check_token(
                 user, token):
