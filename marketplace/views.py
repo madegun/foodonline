@@ -1,11 +1,12 @@
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404
-from .context_processors import get_cart_counter
+from .context_processors import get_cart_total, get_cart_counter
 from marketplace.models import Cart
 from vendor.models import Vendor
 from menu.models import Category, FoodItem
 
 from django.db.models import Prefetch
+from django.contrib.auth.decorators import login_required
 
 
 
@@ -20,6 +21,7 @@ def marketplace(request):
   return render(request, 'marketplace/listing.html', context)
 
 
+#vendor detail
 def vendor_detail(request, vendor_slug):
   vendor = get_object_or_404(Vendor, vendor_slug=vendor_slug)
 
@@ -57,10 +59,10 @@ def add_to_cart(request, food_id):
           # jika sudah ditambahkan maka tambahkan quantity saja dan simpan ke database
           checkcart.quantity += 1
           checkcart.save()
-          return JsonResponse({'status': 'success', 'message': 'qty item berhasil ditambahkan di keranjang', 'cart_counter': get_cart_counter(request), 'qty':checkcart.quantity })
+          return JsonResponse({'status': 'success', 'message': 'qty item berhasil ditambahkan di keranjang', 'cart_counter': get_cart_counter(request), 'qty':checkcart.quantity, 'cart_total': get_cart_total(request) })
         except:
           checkcart = Cart.objects.create(user=request.user, fooditem=fooditem, quantity=1)
-          return JsonResponse({'status': 'success', 'message': 'item berhasil ditambahkan di keranjang', 'cart_counter':get_cart_counter(request), 'qty': checkcart.quantity })
+          return JsonResponse({'status': 'success', 'message': 'item berhasil ditambahkan di keranjang', 'cart_counter':get_cart_counter(request), 'qty': checkcart.quantity, 'cart_total': get_cart_total(request) })
       except:
         return JsonResponse({'status': 'failed', 'message': 'Food ini sementara kosong'})
     else:
@@ -88,7 +90,7 @@ def decrease_cart(request, food_id):
           else:
             checkcart.delete()
             checkcart.quantity = 0
-          return JsonResponse({'status': 'success', 'cart_counter': get_cart_counter(request), 'qty':checkcart.quantity })
+          return JsonResponse({'status': 'success', 'cart_counter': get_cart_counter(request), 'qty':checkcart.quantity, 'cart_total': get_cart_total(request) })
         except:
 
           return JsonResponse({'status': 'failed', 'message': 'keranjang belanja anda kosong' })
@@ -98,3 +100,31 @@ def decrease_cart(request, food_id):
       return JsonResponse({'status':'failed', 'message': 'invalid request'})
   else:
     return JsonResponse({'status': 'login_required', 'message':'silahkan login untuk melanjutkan'})
+
+
+
+@login_required(login_url='login')
+#cart
+def cart(request):
+  cart_items = Cart.objects.filter(user = request.user).order_by('created_at')
+  context = {
+    'cart_items': cart_items,
+  }
+  return render(request, 'marketplace/cart.html', context)
+
+
+#delete cart
+def delete_cart(request, cart_id):
+  if request.user.is_authenticated:
+    if request.headers.get('x-requested-with') == 'XMLHttpRequest':
+
+      try:
+        #try apakah cart qty ada ?
+        cart_item = Cart.objects.filter(user=request.user, id=cart_id)
+        if cart_item:
+          cart_item.delete()
+          return JsonResponse({'status': 'success', 'message': 'belanjaan berhasil di hapus!', 'cart_counter': get_cart_counter(request), 'cart_total': get_cart_total(request) })
+      except:
+          return JsonResponse({'status': 'failed', 'message': 'cart anda kosong!'})
+    else:
+      return JsonResponse({'status': 'failed', 'message':'request tidak ditemukan!'})

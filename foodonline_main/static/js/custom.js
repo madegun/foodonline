@@ -68,7 +68,6 @@ function onPlaceChanged() {
 }
 
 $(document).ready(function () {
-
   //ADD TO CART
   $(".add_to_cart").on("click", function (e) {
     e.preventDefault();
@@ -81,18 +80,27 @@ $(document).ready(function () {
       url: url,
       success: function (response) {
         //console.log(response)
-        if(response.status == 'login_required'){
+        if (response.status == "login_required") {
           //console.log('raise the error message')
-          swal(response.message, 'silahkan login untuk melanjutkan belanja anda.', 'info')
-            .then(function(){
-              window.location = '/login';
-            })
-        }else if(response.status == 'failed'){
-          swal(response.message, '', 'error')
-        }else{
-
+          swal(
+            response.message,
+            "silahkan login untuk melanjutkan belanja anda.",
+            "info"
+          ).then(function () {
+            window.location = "/login";
+          });
+        } else if (response.status == "failed") {
+          swal(response.message, "", "error");
+        } else {
           $("#cart_counter").html(response.cart_counter["cart_counter"]);
           $("#qty-" + food_id).html(response.qty);
+
+          //apply untuk function cartTotal
+          cartTotal(
+            response.cart_total['subtotal'],
+            response.cart_total['tax'],
+            response.cart_total['grand_total'],
+          )
         }
       },
     });
@@ -106,38 +114,114 @@ $(document).ready(function () {
     $("#" + the_id).html(qty);
   });
 
-
-
   //DECREASE CART
   $(".decrease_cart").on("click", function (e) {
     e.preventDefault();
 
     food_id = $(this).attr("data-id");
     url = $(this).attr("data-url");
+    cart_id = $(this).attr("id");
 
     $.ajax({
       type: "GET",
       url: url,
       success: function (response) {
-        if(response.status == 'login_require'){
-          swal(response.message, 'silahkan login untuk melanjutkan belanja anda.', 'info')
-        }
-        else if(response.status == 'failed'){
-          swal(response.message, '', 'error')
-        }else{
+        if (response.status == "login_require") {
+          swal(
+            response.message,
+            "silahkan login untuk melanjutkan belanja anda.",
+            "info"
+          ).then(function () {
+            window.location = "/login";
+          });
 
-          $("#cart_counter").html(response.cart_counter["cart_counter"])
+        } else if (response.status == "failed") {
+          swal(response.message, "", "error");
+        } else {
+          $("#cart_counter").html(response.cart_counter["cart_counter"]);
           $("#qty-" + food_id).html(response.qty);
-        }
 
+          if(window.location.pathname == '/cart/'){
+            removeCartItem(response.qty, cart_id);
+            showCartEmpty();
+          }
+
+           //apply untuk function cartTotal
+           cartTotal(
+            response.cart_total['subtotal'],
+            response.cart_total['tax'],
+            response.cart_total['grand_total'],
+          )
+        }
       },
     });
   });
 
-  $('.item_qty').each(function(){
-    var the_id = $(this).attr('id')
-    var qty = $(this).attr('data-qty')
+  $(".item_qty").each(function () {
+    var the_id = $(this).attr("id");
+    var qty = $(this).attr("data-qty");
 
-    $('#' + the_id).html(qty)
-  })
+    $("#" + the_id).html(qty);
+  });
+
+  //delete cart
+  $(".delete_cart").on("click", function (e) {
+    e.preventDefault();
+
+    cart_id = $(this).attr("data-id");
+    url = $(this).attr("data-url");
+
+    $.ajax({
+      type: "GET",
+      url: url,
+      success: function (response) {
+        console.log(response)
+        if (response.status == "failed") {
+          swal(response.message, "", "error");
+        } else {
+          $("#cart_counter").html(response.cart_counter["cart_counter"]);
+          swal(response.status, response.message, 'info')
+
+           //apply untuk function cartTotal
+           cartTotal(
+            response.cart_total['subtotal'],
+            response.cart_total['tax'],
+            response.cart_total['grand_total'],
+          )
+
+          removeCartItem(0, cart_id);
+          showCartEmpty();
+        }
+      },
+    });
+  });
+
+
+  //function untuk menghapus element cart list langsung ketika klik tombol delete
+  function removeCartItem(cart_qty, cart_id){
+    if(cart_qty <= 0 ){
+      document.getElementById('cart-item-'+cart_id).remove();
+    }
+  }
+
+
+  //function untuk menangani kalau cart kosong tampilkan display empty cart
+  function showCartEmpty(){
+    var checkCartIsEmpty = document.getElementById('cart_counter').innerHTML
+    console.log(checkCartIsEmpty)
+    if(checkCartIsEmpty == 0){
+      document.getElementById("empty-cart").style.display = "block";
+
+    }
+  }
+
+  // function untuk menangani cart total (subtotal, tax, gran_total)
+  function cartTotal(subtotal, tax, grand_total){
+    if(window.location.pathname == '/cart/'){
+      $('#subtotal').html(subtotal);
+      $('#tax').html(tax);
+      $('#total').html(grand_total);
+    }
+  }
+
 });
