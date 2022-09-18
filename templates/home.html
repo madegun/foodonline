@@ -130,6 +130,8 @@
 													{% else %}
 													<img src="{% static 'images/default-profile.png' %}" class="img-thumb wp-post-image" alt=""></a>
 													{% endif %}
+
+
 												</figure>
 												<span class="restaurant-status close">
 													<em class="bookmarkRibbon"></em>Close
@@ -145,10 +147,18 @@
 												<div class="post-title">
 													<h5>
 														<a href="{% url 'vendor_detail' vendor.vendor_slug %}">{{vendor.vendor_name}}</a>
-														<span class="sponsored text-color">Sponsored</span>
+
 													</h5>
 												</div>
-												<address> <span>Type of food : </span> Apple Juice</address>
+												{% if vendor.user_profile.city and vendor.user_profile.state %}
+													<span>{{vendor.user_profile.city}},{{vendor.user_profile.state}}</span>
+												{% endif %}
+
+												{% if vendor.user_profile.address %}
+												<br>
+												<span><small><b>{{vendor.kms}}km</b></small></span>
+													{% endif %}
+
 											</div>
 
 										</div>
