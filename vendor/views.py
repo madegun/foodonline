@@ -89,9 +89,9 @@ def addCat(request):
       category = form.save(commit=False)
       category.vendor = get_vendor(request)
       category.save()
+      category.slug = slugify(category_name)+'-'+str(category.id) #setelah category di save diatas, kemudian slug + id
+      category.save() #simpan lagi database dgn slug
 
-      category.slug = slugify(category_name)+'-'+str(category.id)
-      category.save()
       messages.success(request, 'category berhasil ditambahkan')
       return redirect('menu-builder')
     else:

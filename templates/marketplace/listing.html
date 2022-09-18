@@ -24,7 +24,7 @@
                 <ul>
                   {% for vendor in vendors %}
                   <li style="line-height:15px;">
-                    <div class="img-holder">
+                    <div class="img-holder" >
                       <figure>
                         {% if vendor.user_profile.profile_picture %}
                         <a href="#"><img src="{{vendor.user_profile.profile_picture.url }}" class="img-list wp-post-image" alt=""></a>
@@ -41,6 +41,11 @@
                           <a href="{% url 'vendor_detail' vendor.vendor_slug %}">{{vendor.vendor_name}}</a>
                         </h5>
                         <span><small class="text-muted">{{vendor.user_profile.address}}</small></span>
+
+                        {% if address %}
+                          <br>
+                          <span><small><b>{{vendor.kms}}km</b> jarak tempuh dari {{address}}</small></span>
+                        {% endif %}
                       </div>
 
 

@@ -28,9 +28,9 @@
 	<script src="{% static 'js/bootstrap.js' %}"></script>
 
 	<!--google api scripts attach in header-->
-{% if '/' == request.path or '/profile/' in request.GET %}
-	<script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_API_KEY}}&libraries=places&callback=initAutoComplete" async defer></script>
-{% endif %}
+{% comment %} {% if '/' == request.path or '/profile/' in request.path %} {% endcomment %}
+	<script src="https://maps.googleapis.com/maps/api/js?key={{GOOGLE_API_KEY}}&libraries=places&callback=initAutoComplete" defer></script>
+{% comment %} {% endif %} {% endcomment %}
 
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script> <!-- sweet allert message js-->
 <script src="{% static 'js/custom.js' %}" ></script>

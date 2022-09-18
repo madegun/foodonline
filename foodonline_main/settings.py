@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.1/ref/settings/
 """
 
 from ctypes import cast
+import os
 from pathlib import Path
 from decouple import config
 
@@ -45,6 +46,7 @@ INSTALLED_APPS = [
      'vendor',
      'menu',
      'marketplace',
+     'django.contrib.gis',
 ]
 
 MIDDLEWARE = [
@@ -91,7 +93,8 @@ WSGI_APPLICATION = 'foodonline_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql',
+        # 'ENGINE': 'django.db.backends.postgresql', #default engine untuk postgress database
+        'ENGINE': 'django.contrib.gis.db.backends.postgis', #engine special karena extention postgis di database
         'NAME': config('DB_NAME'),
         'USER': config('DB_USER'),
         'PASSWORD': config('DB_PASSWORD'),
@@ -168,3 +171,8 @@ DEFAULT_FROM_EMAIL=config('DEFAULT_FROM_EMAIL')
 
 #Google API key
 GOOGLE_API_KEY = config('GOOGLE_API_KEY')
+
+
+os.environ['PATH'] = os.path.join(BASE_DIR, 'env1\Lib\site-packages\osgeo') + ';' + os.environ['PATH']
+os.environ['PROJ_LIB'] = os.path.join(BASE_DIR, 'env1\Lib\site-packages\osgeo\data\proj') + ';' + os.environ['PATH']
+GDAL_LIBRARY_PATH = os.path.join(BASE_DIR, 'env1\Lib\site-packages\osgeo\gdal304.dll')
