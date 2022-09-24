@@ -1,0 +1,62 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+<!--load message toast -->
+{% include 'include/alerts.html' %}
+
+<!-- Main Section Start -->
+<div class="main-section">
+  {% include 'include/vCover.html' %}
+  <div class="page-section account-header buyer-logged-in">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-3 col-md-3 col-sm-12 col-xs-12">
+          <div class="user-account-nav user-account-sidebar">
+            {% include 'include/v_sidebar.html' %}
+          </div>
+        </div>
+        <div class="col-lg-9 col-md-9 col-sm-12 col-xs-12">
+          <div class="user-dashboard loader-holder">
+            <div class="user-holder">
+              <h5 class="text-uppercase">Jam Buka - Tutup</h5>
+
+              <hr/>
+
+
+
+              <table class="table opening_hours" style="width:500px;">
+                <tbody>
+                  {% for h in openinghours %}
+                  <tr id="hour-{{h.id}}">
+                    <td><b> {{h}}</b></td>
+                    <td>{% if h.is_closed %} Closed {% else %} {{h.from_hour}} - {{h.to_hour}}{% endif %}</td>
+                    <td><a class="delete_hour" data-url="{% url 'opening-hours-delete' h.id %}" href="#">Hapus</a></td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+              <br/>
+
+              <form id="opening_hours">
+                {% csrf_token %}
+                <div class="row">
+                  <div class="col md-2">{{form.day}}</div>
+                  <div class="col md-2">{{form.from_hour}}</div>
+                  <div class="col md-2">{{form.to_hour}}</div>
+                  <div class="col md-3">{{form.is_closed}} Set Tutup Toko</div>
+
+                  <input type="hidden" value="{% url 'opening-hours-add' %}" id="data-url"/>
+                  <div class="col-md-2 btn btn-success mr-3 add_hour ">Add Hour</div>
+                </div>
+              </form>
+
+
+
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main Section End -->
+
+{% endblock %}
