@@ -4,7 +4,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from .context_processors import get_cart_total, get_cart_counter
 from marketplace.models import Cart
-from vendor.models import Vendor
+from vendor.models import Vendor, OpeningHour
 from menu.models import Category, FoodItem
 
 from django.db.models import Prefetch
@@ -15,6 +15,10 @@ from django.contrib.gis.geos import GEOSGeometry
 from django.contrib.gis.measure import D  # ``D`` is a shortcut for ``Distance``
 from django.contrib.gis.db.models.functions import Distance
 
+from datetime import date, datetime
+
+
+
 
 
 
@@ -22,9 +26,11 @@ from django.contrib.gis.db.models.functions import Distance
 def marketplace(request):
     vendors = Vendor.objects.filter(is_approved=True, user__is_active=True)
     vendors_count = vendors.count()
+
     context = {
         'vendors': vendors,
         'vendors_count': vendors_count,
+
     }
     return render(request, 'marketplace/listing.html', context)
 
@@ -38,6 +44,13 @@ def vendor_detail(request, vendor_slug):
         Prefetch('fooditems',
                  queryset=FoodItem.objects.filter(is_available=True)))
 
+    opening_hours = OpeningHour.objects.filter(vendor=vendor).order_by('day', '-from_hour')
+    #get current date day
+    today_date = date.today() #date fungsi untuk mendapatkan tgl hari ini
+    today = today_date.isoweekday()  #fungsi date untuk mnedapat weekly (senin=1,... - munggu=7)
+    current_date_day = OpeningHour.objects.filter(vendor=vendor, day=today)
+
+
     if request.user.is_authenticated:
         cart_items = Cart.objects.filter(user=request.user)
     else:
@@ -47,6 +60,9 @@ def vendor_detail(request, vendor_slug):
         'vendor': vendor,
         'categories': categories,
         'cart_items': cart_items,
+        'opening_hours': opening_hours,
+        'current_date_day':current_date_day,
+
     }
     return render(request, 'marketplace/vendor_detail.html', context)
 

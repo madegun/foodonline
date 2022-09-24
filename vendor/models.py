@@ -3,7 +3,7 @@ from django.db import models
 
 from accounts.models import User, UserProfile
 from accounts.utils import send_email_vendor_notification
-from datetime import time
+from datetime import time, date, datetime
 
 
 # Create your models here.
@@ -19,6 +19,30 @@ class Vendor(models.Model):
 
   def __str__(self):
     return self.vendor_name
+
+  def is_open(self):
+    #get current date day
+    today_date = date.today() #date fungsi untuk mendapatkan tgl hari ini
+    today = today_date.isoweekday()  #fungsi date untuk mnedapat weekly (senin=1,... - munggu=7)
+    current_date_day = OpeningHour.objects.filter(vendor=self, day=today)
+
+    #mencari status apakah date  time buka / closed
+    now = datetime.now()
+    current_time = now.strftime('%H:%M:%S')
+
+    is_open = None
+    for i in current_date_day:
+        start = str(datetime.strptime(i.from_hour, "%I:%M %p").time())
+        end = str(datetime.strptime(i.to_hour, "%I:%M %p").time())
+
+        if current_time > start and current_time < end:
+            is_open = True
+            break
+        else:
+            is_open = False
+
+    return is_open
+
 
   def save(self, *args, **kwargs):
     if self.pk is not None:
@@ -65,7 +89,7 @@ class OpeningHour(models.Model):
 
   class Meta:
     ordering = ('day', '-from_hour')
-    unique_together = ('day', 'from_hour', 'to_hour')
+    unique_together = ('vendor','day', 'from_hour', 'to_hour')
 
   def __str__(self):
     return self.get_day_display()
