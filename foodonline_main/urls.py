@@ -29,6 +29,8 @@ urlpatterns = [
     # search
     path('search/', MarketplaceViews.search, name='search'),
 
+
+
 ]
 
 from django.conf import settings

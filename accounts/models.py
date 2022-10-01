@@ -94,9 +94,9 @@ class UserProfile(models.Model):
   profile_picture = models.ImageField(upload_to = 'user/profile_picture', blank=True, null=True)
   cover_photo = models.ImageField(upload_to = 'user/cover_photo', blank=True, null=True)
   address = models.CharField(max_length=250, blank=True,null=True)
-  country = models.CharField(max_length=15, blank=True,null=True)
-  state = models.CharField(max_length=15, blank=True,null=True)
-  city = models.CharField(max_length=15, blank=True,null=True)
+  country = models.CharField(max_length=25, blank=True,null=True)
+  state = models.CharField(max_length=25, blank=True,null=True)
+  city = models.CharField(max_length=25, blank=True,null=True)
   pin_code = models.CharField(max_length=15, blank=True,null=True)
   latitude = models.CharField(max_length=20, blank=True,null=True)
   longitude = models.CharField(max_length=20, blank=True,null=True)
@@ -113,5 +113,6 @@ class UserProfile(models.Model):
       self.location = Point(float(self.longitude), float(self.latitude))
       return super(UserProfile, self).save(*args, **kwargs)
     return super(UserProfile, self).save(*args, **kwargs)
+
 
 
