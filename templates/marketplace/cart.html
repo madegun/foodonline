@@ -36,7 +36,7 @@
                             <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{item.fooditem.vendor}}</a>
                           </div>
                           <div class="price-holder">
-                            <span class="price">Rp. {{item.fooditem.price}}</span>
+                            <span class="price">Rp.{{item.fooditem.price}}</span>
 
                             <!-- decrease qty -->
                           <a href="#" class="decrease_cart" id="{{item.id}}" data-id="{{item.fooditem.id}}" id="{{item.id}}" data-url="{% url 'decrease_cart' item.fooditem.id %}" style="margin-right:28px;"><i class="icon-minus text-color"></i></a>
@@ -94,12 +94,18 @@
                         </span>
 
                       </li>
-                      <li style="list-style-type: none; ">Tax
-                        <span class="price float-right">
-                          <span class="currency">Rp.</span>
-                          <span id="tax">{{tax}}</span>
-                        </span>
-                      </li>
+
+                      {% for key, value in tax_dict.items %}
+                        {% for i, j in value.items %}
+                          <li style="list-style-type: none; ">{{key}} <small>({{i}}%)</small>
+                            <span class="price float-right">
+                              <span class="currency">Rp.</span>
+                              <span id="tax-{{key}}">{{j}}</span>
+                            </span>
+                          </li>
+                        {% endfor %}
+                      {% endfor %}
+
                       <li style="list-style-type: none; font-weight:800; ">Total
                         <span class="price float-right">
                           <span class="currency">Rp.</span>

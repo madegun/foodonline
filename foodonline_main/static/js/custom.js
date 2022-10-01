@@ -68,23 +68,26 @@ function onPlaceChanged() {
 }
 
 $(document).ready(function () {
-  //ADD TO CART
+  //add cart
   $(".add_to_cart").on("click", function (e) {
     e.preventDefault();
 
     food_id = $(this).attr("data-id");
     url = $(this).attr("data-url");
+    data = {
+      food_id: food_id,
+    };
 
     $.ajax({
       type: "GET",
       url: url,
+      data: data,
       success: function (response) {
-        //console.log(response)
+        console.log(response);
         if (response.status == "login_required") {
-          //console.log('raise the error message')
           swal(
             response.message,
-            "silahkan login untuk melanjutkan belanja anda.",
+            "anda harus login untuk lanjut belanja",
             "info"
           ).then(function () {
             window.location = "/login";
@@ -95,12 +98,11 @@ $(document).ready(function () {
           $("#cart_counter").html(response.cart_counter["cart_counter"]);
           $("#qty-" + food_id).html(response.qty);
 
-          //apply untuk function cartTotal
-          cartTotal(
-            response.cart_total["subtotal"],
-            response.cart_total["tax"],
-            response.cart_total["grand_total"]
-          );
+            cartTotal(
+              response.cart_total['subtotal'],
+              response.cart_total['tax_dict'],
+              response.cart_total['grand_total']
+          )
         }
       },
     });
@@ -110,11 +112,10 @@ $(document).ready(function () {
   $(".item_qty").each(function () {
     var the_id = $(this).attr("id");
     var qty = $(this).attr("data-qty");
-
     $("#" + the_id).html(qty);
   });
 
-  //DECREASE CART
+  //kurangi
   $(".decrease_cart").on("click", function (e) {
     e.preventDefault();
 
@@ -126,41 +127,32 @@ $(document).ready(function () {
       type: "GET",
       url: url,
       success: function (response) {
-        if (response.status == "login_require") {
-          swal(
-            response.message,
-            "silahkan login untuk melanjutkan belanja anda.",
-            "info"
-          ).then(function () {
+        console.log(response);
+        if (response.status == "login_required") {
+          swal(response.message, "", "info", function () {
             window.location = "/login";
           });
-        } else if (response.status == "failed") {
+        } else if (response.status == "falied") {
           swal(response.message, "", "error");
         } else {
           $("#cart_counter").html(response.cart_counter["cart_counter"]);
-          $("#qty-" + food_id).html(response.qty);
+          $("#qty-"+food_id).html(response.qty);
+
+          cartTotal(
+            response.cart_total["subtotal"],
+            response.cart_total["tax_dict"],
+            response.cart_total["grand_total"]
+          );
 
           if (window.location.pathname == "/cart/") {
             removeCartItem(response.qty, cart_id);
             showCartEmpty();
           }
 
-          //apply untuk function cartTotal
-          cartTotal(
-            response.cart_total["subtotal"],
-            response.cart_total["tax"],
-            response.cart_total["grand_total"]
-          );
+
         }
       },
     });
-  });
-
-  $(".item_qty").each(function () {
-    var the_id = $(this).attr("id");
-    var qty = $(this).attr("data-qty");
-
-    $("#" + the_id).html(qty);
   });
 
   //delete cart
@@ -179,44 +171,51 @@ $(document).ready(function () {
           swal(response.message, "", "error");
         } else {
           $("#cart_counter").html(response.cart_counter["cart_counter"]);
-          swal(response.status, response.message, "info");
+          swal(response.status, response.message, "success");
 
           //apply untuk function cartTotal
           cartTotal(
             response.cart_total["subtotal"],
-            response.cart_total["tax"],
-            response.cart_total["grand_total"]
+            response.cart_total["tax_dict"],
+            response.cart_total["grand_total"],
           );
 
           removeCartItem(0, cart_id);
           showCartEmpty();
         }
-      },
+      }
     });
   });
 
   //function untuk menghapus element cart list langsung ketika klik tombol delete
   function removeCartItem(cart_qty, cart_id) {
     if (cart_qty <= 0) {
-      document.getElementById("cart-item-" + cart_id).remove();
+      document.getElementById("cart-item-"+cart_id).remove();
     }
   }
 
   //function untuk menangani kalau cart kosong tampilkan display empty cart
   function showCartEmpty() {
-    var checkCartIsEmpty = document.getElementById("cart_counter").innerHTML;
-    console.log(checkCartIsEmpty);
-    if (checkCartIsEmpty == 0) {
+    var cart_counter = document.getElementById("cart_counter").innerHTML;
+
+    if (cart_counter == 0) {
       document.getElementById("empty-cart").style.display = "block";
     }
   }
 
   // function untuk menangani cart total (subtotal, tax, gran_total)
-  function cartTotal(subtotal, tax, grand_total) {
+  function cartTotal(subtotal, tax_dict, grand_total) {
     if (window.location.pathname == "/cart/") {
       $("#subtotal").html(subtotal);
-      $("#tax").html(tax);
       $("#total").html(grand_total);
+
+
+      for(key1 in tax_dict){
+        for(key2 in tax_dict[key1]){
+         // console.log(tax_dict[key1][key2])
+          $('#tax-'+key1).html(tax_dict[key1][key2])
+        }
+      }
     }
   }
 
@@ -286,61 +285,20 @@ $(document).ready(function () {
     } else {
       swal("Hei", "fields tidak boleh kosong", "info");
     }
-  });
+  }); //end add hour
 
-  //delete hour
-  // $(document).on("click", ".delete_hour", function (e) {
-  //   e.preventDefault();
-
-  //   url = $(this).attr("data-url");
-
-  //   $.ajax({
-  //     type: "GET",
-  //     url: url,
-
-  //     success: function (response) {
-  //       if (response.status == "success") {
-  //         document.getElementById("hour-" + response.id).remove();
-  //       }
-  //     },
-  //   });
-  // });
-
-  // $(document).on('click','.delete_hour', function(e){
-  //   try {
-  //       url = $(this).attr('data-url');
-  //        $('.delete_hour').load(url);
-  //   } catch(ex) {
-  //       alert('An error occurred and I need to write some code to handle this!');
-  //   }
-  //   e.preventDefault();
-
-  //   $.ajax({
-  //     type: 'GET',
-  //     url: url,
-  //     success: function(response){
-  //         if(response.status == 'success'){
-  //             document.getElementById('hour-'+response.id).remove()
-  //         }
-  //     }
-  // })
-
-    $(document).on("click", ".delete_hour", function(e){
-      e.preventDefault();
-      url = $(this).attr('data-url');
-      $.ajax({
-          type: 'GET',
-          url: url,
-          success: function(response){
-              if(response.status == 'success'){
-                  document.getElementById('hour-'+response.id).remove()
-              }
-          }
-      })
+  //start delete_hour
+  $(document).on("click", ".delete_hour", function (e) {
+    e.preventDefault();
+    url = $(this).attr("data-url");
+    $.ajax({
+      type: "GET",
+      url: url,
+      success: function (response) {
+        if (response.status == "success") {
+          document.getElementById("hour-" + response.id).remove();
+        }
+      },
     });
-
+  }); //end delete_hour
 }); //end document ready
-
-
-
-
