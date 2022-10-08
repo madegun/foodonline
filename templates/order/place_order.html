@@ -10,7 +10,7 @@
             <ul class="stickynav-tabs nav nav-tabs">
               <li class="active">
                 <a data-toggle="tab" href="#home"
-                  ><i class="icon- icon-shopping_cart"></i>Cart Item</a
+                  ><i class="icon- icon-shopping_cart"></i>xxx</a
                 >
               </li>
             </ul>
@@ -18,50 +18,8 @@
               <div id="home" class="tab-pane in active">
                 <div class="menu-itam-holder">
 
-                  <!--chek block untuk di tampilkan jika cart yg di hapus sampai kosong-->
-                  <div class="text-center p-5" id="empty-cart" style="display:none;"><h3>Keranjang belanja kosong!</h3></div>
-                  <!--end check-->
-
                   <div id="menu-item-list-6272" class="menu-itam-list">
-                    <ul>
-                      {% if cart_items %}
-                       {% for item in cart_items %}
-                        <li id="cart-item-{{item.id}}">
-                          <div class="image-holder">
-                            <img src="{{ item.fooditem.image.url }}" alt="" />
-                          </div>
-                          <div class="text-holder">
-                            <h6>{{item.fooditem}}</h6>
-                            <span>{{item.fooditem.description}}</span>
-                            <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{item.fooditem.vendor}}</a>
-                          </div>
-                          <div class="price-holder">
-                            <span class="price">Rp.{{item.fooditem.price}}</span>
 
-                            <!-- decrease qty -->
-                          <a href="#" class="decrease_cart" id="{{item.id}}" data-id="{{item.fooditem.id}}" id="{{item.id}}" data-url="{% url 'decrease_cart' item.fooditem.id %}" style="margin-right:28px;"><i class="icon-minus text-color"></i></a>
-
-                            <label id="qty-{{item.fooditem.id}}">0</label>
-
-                            <!--tambah add qty -->
-                            <a href="#" class="add_to_cart" data-id="{{item.fooditem.id}}" data-url="{% url 'add_to_cart' item.fooditem.id %}"><i class="icon-plus text-color"></i></a>
-
-                            <!--hapus qty cart -->
-                            <a href="#" class="delete_cart" data-id="{{item.id}}" data-url="{% url 'delete_cart' item.id %}"><i class="icon-trash text-color"></i></a>
-
-                          </div>
-                        </li>
-                       {% endfor %}
-
-                       <!--menampilkan qty on load cart-->
-                        {% for item in cart_items %}
-                          <span id="qty-{{item.fooditem.id}}" class="item_qty d-none" data-qty={{item.quantity}}>{{item.quantity}}</span>
-                        {% endfor %}
-
-                      {% else %}
-                        <div class="text-center p-5"><h3>Keranjang belanja kosong!</h3></div>
-                      {% endif %}
-                    </ul>
 
                   </div>
                 </div>
@@ -112,7 +70,7 @@
                           <span id="total">{{grand_total}}</span>
                         </span>
                       </li>
-                      <a href="{% url 'checkout' %}" class="btn btn-danger w-100 p-2 mt-3">Proses Checkout</a>
+                      <div id="paypal-button-container" style="margin-top:10px;"></div>
                     </ul>
                   </div>
                 </div>
@@ -127,5 +85,41 @@
   </div>
 </div>
 <!-- Main Section End -->
+
+<script>
+  var grand_total = '{{grand_total}}'
+  // Render the PayPal button into #paypal-button-container
+  paypal.Buttons({
+
+      // Set up the transaction
+      createOrder: function(data, actions) {
+          return actions.order.create({
+              purchase_units: [{
+                  amount: {
+                      value: grand_total
+                  }
+              }]
+          });
+      },
+
+      // Finalize the transaction
+      onApprove: function(data, actions) {
+          return actions.order.capture().then(function(orderData) {
+              // Successful capture! For demo purposes:
+              console.log(orderData)
+              var transaction = orderData.purchase_units[0].payments.captures[0];
+              console.log(transaction.id)
+
+              // Replace the above to show a success message within this page, e.g.
+              // const element = document.getElementById('paypal-button-container');
+              // element.innerHTML = '';
+              // element.innerHTML = '<h3>Thank you for your payment!</h3>';
+              // Or go to another URL:  actions.redirect('thank_you.html');
+          });
+      }
+
+
+  }).render('#paypal-button-container');
+</script>
 
 {% endblock %}

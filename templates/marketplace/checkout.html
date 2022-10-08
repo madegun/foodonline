@@ -1,0 +1,200 @@
+{% extends 'base.html' %} {% load static %} {% block content %}
+
+<!-- Main Section Start -->
+<div class="main-section mt-5">
+  <div class="page-section">
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+          <div class="tabs-holder horizontal">
+            <ul class="stickynav-tabs nav nav-tabs">
+              <li class="active">
+                <a data-toggle="tab" href="#home"
+                  ><i class="icon- icon-shopping_cart"></i>Detail Pengiriman</a
+                >
+              </li>
+            </ul>
+            <div class="tab-content">
+              <div id="home" class="tab-pane in active">
+                  <div class="menu-itam-holder">
+                      <div id="menu-item-list-6272" class="menu-itam-list">
+                          <form action="{% url 'place_order' %}" method="POST">
+                              {% csrf_token %}
+
+                              <div class="row">
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      First Name: {{ form.first_name }}
+                                  </div>
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      Last Name: {{ form.last_name }}
+                                  </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      Phone Number: {{ form.phone }}
+                                  </div>
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      Email Address: {{ form.email }}
+                                  </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="form-group col-md-12 col-sm-12 col-lg-12">
+                                      Address: {{ form.address }}
+                                  </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      Country: {{ form.country }}
+                                  </div>
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      State: {{ form.state }}
+                                  </div>
+                              </div>
+
+                              <div class="row">
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      City: {{ form.city }}
+                                  </div>
+                                  <div class="form-group col-md-6 col-sm-12 col-lg-6">
+                                      Pin Code: {{ form.pin_code }}
+                                  </div>
+                              </div>
+                      </div>
+                  </div>
+              </div>
+          </div>
+          </div>
+        </div>
+
+
+        <!-- start order section  -->
+        <div class="col-lg-6 col-md-6 col-sm-6 col-xs-12">
+          <div class="tabs-holder horizontal">
+            <ul class="stickynav-tabs nav nav-tabs">
+              <li class="active">
+                <a data-toggle="tab" href="#home"
+                  ><i class="icon- icon-shopping_cart"></i>Orderan Kamu</a
+                >
+              </li>
+            </ul>
+
+
+            <div class="tab-content">
+              <div id="home" class="tab-pane in active">
+                <div class="menu-itam-holder">
+
+                  <div id="menu-item-list-6272" class="menu-itam-list" style="margin-bottom:0px;">
+                  <ul>
+                    {% if cart_items %}
+                     {% for item in cart_items %}
+                      <li id="cart-item-{{item.id}}">
+                        <div class="image-holder">
+                          <img src="{{ item.fooditem.image.url }}" alt="" />
+                        </div>
+                        <div class="text-holder">
+                          <h6>{{item.fooditem}}</h6>
+                          <span>{{item.fooditem.description}}</span>
+                          <a href="{% url 'vendor_detail' item.fooditem.vendor.vendor_slug %}" class="badge badge-warning">{{item.fooditem.vendor}}</a>
+                        </div>
+                        <div class="quantity" style="display: inline-block; position:absolut; top:50%;   transform:translateY(-70%);"><span>{{item.quantity}}X</span></div>
+                        <div class="price-holder">
+                          <span class="price">Rp.{{item.fooditem.price}}</span>
+
+                        </div>
+                      </li>
+                     {% endfor %}
+
+                     <!--menampilkan qty on load cart-->
+                      {% for item in cart_items %}
+                        <span id="qty-{{item.fooditem.id}}" class="item_qty d-none" data-qty={{item.quantity}}>{{item.quantity}}</span>
+                      {% endfor %}
+
+                    {% else %}
+                      <div class="text-center p-5"><h3>Keranjang belanja kosong!</h3></div>
+                    {% endif %}
+                  </ul>
+                </div>
+
+                  <div>
+                    <ul>
+                      <li style="list-style-type: none; ">Subtotal
+                        <span class="price float-right">
+                          <span class="currency">Rp.</span>
+                          <span id="subtotal">{{subtotal}}</span>
+                        </span>
+
+                      </li>
+
+                      {% for key, value in tax_dict.items %}
+                        {% for i, j in value.items %}
+                          <li style="list-style-type: none; ">{{key}} <small>({{i}}%)</small>
+                            <span class="price float-right">
+                              <span class="currency">Rp.</span>
+                              <span id="tax-{{key}}">{{j}}</span>
+                            </span>
+                          </li>
+                        {% endfor %}
+                      {% endfor %}
+
+                      <li style="list-style-type: none; font-weight:800; ">Total
+                        <span class="price float-right">
+                          <span class="currency">Rp.</span>
+                          <span id="total">{{grand_total}}</span>
+                        </span>
+                      </li>
+                      &nbsp;
+                      <!--payment method paypal dan transfer bank-->
+                      <div class="payment-method">
+                        <h5>Select Payment Method:</h5>
+                        <label>
+                          <input type="radio" name="payment_method" value="Paypal">
+                          <img src="{% static 'images/Paypal.png'%}" alt="paypal" width="100">
+                        </label>
+                        &nbsp;
+                        <label>
+                          <input type="radio" name="payment_method" value="Transfer">
+                          <img src="{% static 'images/bank.png'%}" alt="transfer" width="100">
+                        </label>
+                      </div>
+                      <div class="text-danger" id="payment_method_error"></div>
+                      <button onclick="return paymentConfirm()" type="submit" class="btn btn-danger w-100 p-2 mt-3">Checkout Sekarang</button>
+                    </ul>
+                  </form> <!--end form-->
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- end order section  -->
+      </div>
+    </div>
+  </div>
+</div>
+<!-- Main Section End -->
+<script>
+  function paymentConfirm(){
+    var paymethod = $("input[name='payment_method']:checked").val();
+    if(!paymethod){
+      $('#payment_method_error').html('pilih metode pembayaran anda dulu!')
+      return false;
+    }else{
+      var conf = confirm('metode pembayaran anda ' +paymethod+ '\nclick OK untuk melanjutkan')
+      if(conf == true){
+        return true
+      }else{
+        return false
+      }
+    }
+  }
+
+  $("input[name='payment_method']").on('change', function(){
+    $('#payment_method_error').html('')
+  })
+</script>
+
+{% endblock %}

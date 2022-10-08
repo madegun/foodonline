@@ -24,10 +24,18 @@ urlpatterns = [
     path('', views.home, name='home'),
     path('', include('accounts.urls')),
     path('marketplace/', include('marketplace.urls')),
-    #cart URL
+
+    #cart path
     path('cart/', MarketplaceViews.cart, name='cart'),
-    # search
+
+    # search path
     path('search/', MarketplaceViews.search, name='search'),
+
+    #checkout path
+    path('checkout/', MarketplaceViews.checkout , name='checkout'),
+
+    #order path
+    path('order/', include('order.urls')),
 
 
 

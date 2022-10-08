@@ -19,3 +19,21 @@
 table > tbody > tr > td{
   border: none !important;
 }
+
+
+.payment-method [type=radio]{
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.payment-method [type=radio]+img{
+  cursor: pointer;
+  padding: 5px;
+  /* margin-right: 10px; */
+}
+
+.payment-method [type=radio]:checked+img{
+  border: 1px solid red
+}

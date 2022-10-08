@@ -36,14 +36,6 @@ def registerUser(request):
         print(request.POST)
         form = UserForm(request.POST)
         if form.is_valid():
-            #create user using form method
-            # password = form.cleaned_data['password']
-            # user = form.save(commit=False)
-            # user.role = User.CUSTOMER
-            # user.set_password(password)
-            # user.save()
-            # return redirect('registerUser')
-
             #create user using create user model method
             first_name = form.cleaned_data['first_name']
             last_name = form.cleaned_data['last_name']
